@@ -8,12 +8,11 @@ public class VulnerableLogin extends HttpServlet {
 
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/testdb", "user", "pass");
-            Statement stmt = conn.createStatement();
-
-            // 🚨 Vulnerable to SQL Injection!
-            String query = "SELECT * FROM users WHERE username = '" + username +
-                           "' AND password = '" + password + "'";
-            ResultSet rs = stmt.executeQuery(query);
+            String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 response.getWriter().println("Login successful!");
